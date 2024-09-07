@@ -73,6 +73,15 @@ public class BoardController {
         return "boardview";
     }
 
+    @GetMapping("/board/delete")
+    public String boardDelete(Integer id) {
+
+        boardService.boardDelete(id);
+
+        return "redirect:/board/list";
+    }
+
+
     @GetMapping("/board/modify/{id}")
     public String boardModify(@PathVariable("id") Integer id,
                               Model model) {
@@ -84,14 +93,11 @@ public class BoardController {
 
     @PostMapping("/board/update/{id}")
     public String boardUpdate(@PathVariable("id") Integer id, Board board, MultipartFile file) throws Exception{
-
         Board boardTemp = boardService.boardView(id);
         boardTemp.setTitle(board.getTitle());
         boardTemp.setContent(board.getContent());
-
         boardService.write(boardTemp, file);
 
         return "redirect:/board/list";
-
     }
 }
