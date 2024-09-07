@@ -9,9 +9,13 @@
 
     /*<![CDATA[*/
 
+    // Thymeleaf 변수를 JavaScript 변수에 할당
     var message = [[${message}]];
+
+    // 경고창을 띄우는 코드
     alert(message);
 
+    // 페이지를 새로운 URL로 리다이렉트
     location.replace([[${searchUrl}]]);
 
     /*]]>*/

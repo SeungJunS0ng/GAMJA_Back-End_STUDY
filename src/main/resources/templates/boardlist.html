@@ -4,74 +4,152 @@
     <meta charset="UTF-8">
     <title>게시물 페이지</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
         .layout {
-             width: 500px;
-             margin: 0 auto;
-             margin-top: 40px;
-             padding: 20px;
-             background-color: #f9f9f9;
-             border: 1px solid #ddd;
-             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-         }
+            width: 80%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
 
-         table {
-             width: 100%;
-             border-collapse: collapse;
-         }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-         th, td {
-             border: 1px solid #ddd;
-             padding: 10px;
-             text-align: left;
-         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
 
-         th {
-             background-color: #f0f0f0;
-         }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
 
         .pagination {
-             margin-top: 20px;
-             text-align: center;
-         }
+            margin-top: 20px;
+            text-align: center;
+        }
 
         .pagination a {
-             margin-right: 10px;
-             padding: 5px 10px;
-             border: 1px solid #ddd;
-             border-radius: 5px;
-             text-decoration: none;
-             color: #337ab7;
-         }
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #007BFF;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
 
         .pagination a:hover {
-             background-color: #f0f0f0;
-         }
+            background-color: #007BFF;
+            color: #fff;
+        }
 
-         button {
-             background-color: #4CAF50;
-             color: #fff;
-             padding: 10px 20px;
-             border: none;
-             border-radius: 5px;
-             cursor: pointer;
-         }
+        .pagination .active {
+            background-color: #007BFF;
+            color: #fff;
+            border: 1px solid #007BFF;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
 
-         button:hover {
-             background-color: #3e8e41;
-         }
+        .pagination strong {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            margin: 0 5px;
+            color: #007BFF;
+            font-weight: bold;
+            text-align: center;
+        }
 
-         input[type="text"] {
-             width: 100%;
-             padding: 10px;
-             margin-bottom: 20px;
-             border: 1px solid #ccc;
-         }
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-block;
+            text-align: center;
+            width: 150px;
+            height: 45px;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        form {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            box-sizing: border-box;
+        }
+
+        .search-button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 150px;
+            height: 45px;
+            text-align: center;
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 
 <body>
 <div class="layout">
+    <!-- 게시물 리스트 제목 -->
     <h1>게시물 리스트</h1>
+
+    <!-- 게시물 목록 테이블 -->
     <table>
         <thead>
         <tr>
@@ -80,25 +158,33 @@
         </tr>
         </thead>
         <tbody>
-            <tr th:each="board : ${list}">
-                <td th:text="${board.id}">1</td>
-                <td>
-                    <a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}"></a>
-                </td>
-            </tr>
+        <!-- 게시물 목록을 반복하여 표시 -->
+        <tr th:each="board : ${list}">
+            <td th:text="${board.id}">1</td>
+            <td>
+                <!-- 게시물 상세보기 링크 -->
+                <a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}" style="color: #007BFF; text-decoration: none;">상세보기</a>
+            </td>
+        </tr>
         </tbody>
     </table>
 
-    <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
-        <a th:if="${page!= nowPage}" th:href="@{/board/list(page = ${page - 1}, searchKeyword = ${param.searchKeyword})}" th:text="${page}"></a>
-        <strong th:if="${page == nowPage}" th:text="${page}" style="color : red"></strong>
-    </th:block>
+    <!-- 페이지 네비게이션 -->
+    <div class="pagination">
+        <!-- 페이지 번호를 반복하여 표시 -->
+        <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+            <a th:if="${page != nowPage}" th:href="@{/board/list(page=${page - 1}, searchKeyword=${param.searchKeyword})}" th:text="${page}"></a>
+            <a th:if="${page == nowPage}" class="active" th:text="${page}"></a>
+        </th:block>
+    </div>
+
+    <!-- 검색 폼 -->
     <form th:action="@{/board/list}" method="get">
         <input type="text" name="searchKeyword" placeholder="검색어 입력">
-        <button type="submit">검색</button>
+        <button type="submit" class="search-button">검색</button>
     </form>
 
-    <!-- Make the link to the blog post writing form a button -->
+    <!-- 게시물 작성 버튼 -->
     <button onclick="location.href='/board/write'">게시물 작성</button>
 </div>
 </body>

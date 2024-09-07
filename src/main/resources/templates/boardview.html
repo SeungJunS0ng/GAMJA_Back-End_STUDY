@@ -2,14 +2,79 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시글 상세 페이지</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #555;
+            line-height: 1.6;
+        }
+        a {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007BFF;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+        .links {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
-<h1 th:text="${board.title}">제목입니다.</h1>
-<p th:text="${board.content}">내용이 들어갈 부분입니다.</p>
-<a th:href="@{/board/delete(id=${board.id})}">글삭제</a>
-<a th:href="@{${board.filepath}}">다운받기</a>
-<a th:href="@{/board/modify/{id}(id=${board.id})}">수정</a>
+<div class="container">
+    <!-- 게시글 제목 -->
+    <h1 th:text="${board.title}">제목입니다.</h1>
+
+    <!-- 게시글 내용 -->
+    <p th:text="${board.content}">내용이 들어갈 부분입니다.</p>
+
+    <!-- 링크 버튼들 -->
+    <div class="links">
+        <!-- 글 삭제 링크 -->
+        <a th:href="@{/board/delete(id=${board.id})}">글삭제</a>
+
+        <!-- 파일 다운로드 링크 -->
+        <a th:href="@{${board.filepath}}">다운받기</a>
+
+        <!-- 게시글 수정 링크 -->
+        <a th:href="@{/board/modify/{id}(id=${board.id})}">수정</a>
+    </div>
+</div>
+
 </body>
 </html>

@@ -12,118 +12,103 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @Controller
 public class BoardController {
 
-
-    // 서비스 클래스를 의존성 주입
     @Autowired
     private BoardService boardService;
 
-    // 게시물 작성 폼을 반환하는 메소드
+    // 게시물 작성 폼을 반환
     @GetMapping("/board/write")
     public String boardWriteForm() {
-        // 게시물 작성 폼을 반환
-        return "boardwrite";
+        return "boardwrite"; // 작성 폼 뷰 반환
     }
 
-    // 게시물 작성 처리를 하는 메소드
+    // 게시물 작성 처리
     @PostMapping("/board/writepro")
-    public String boardWritePro(Board board, Model model, MultipartFile file) throws Exception {
-        // 서비스 클래스의 write 메소드를 호출하여 게시물 작성 처리
-        boardService.write(board, file);
-
-        // 모델에 메시지와 검색 URL을 추가
-        model.addAttribute("message", "글 작성이 완료되었습니다.");
-        model.addAttribute("searchUrl", "/board/list");
-
-        // 메시지 페이지를 반환
-        return "message";
-    }
-
-    // 게시물 목록을 가져오는 메소드
-    @GetMapping("/board/list")
-    public String boardList(Model model,
-                            // 페이지네이션 설정 (페이지 번호, 한 페이지당 게시물 수, 정렬 기준, 정렬 방향)
-                            @PageableDefault(page = 0, size = 6, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
-                            // 검색 키워드
-                            String searchKeyword) {
-        // 게시물 목록을 저장할 변수
-        Page<Board> list = null;
-
-        // 검색 키워드가 없으면 전체 게시물 목록을 가져옴
-        if (searchKeyword == null) {
-            // 서비스 클래스의 boardList 메소드를 호출하여 게시물 목록을 가져옴
-            list = boardService.boardList(pageable);
-        } else {
-            // 검색 키워드가 있으면 검색 결과를 가져옴
-            list = boardService.boardSearchList(searchKeyword, pageable);
+    public String boardWritePro(Board board, Model model, @RequestParam(value = "file", required = false) MultipartFile file) throws Exception {
+        if (board.getTitle() == null || board.getTitle().trim().isEmpty() ||
+                board.getContent() == null || board.getContent().trim().isEmpty()) {
+            model.addAttribute("message", "제목과 내용이 필요합니다.");
+            model.addAttribute("searchUrl", "/board/write");
+            return "message"; // 에러 메시지 뷰 반환
         }
 
-        // 현재 페이지 번호
-        int nowPage = list.getPageable().getPageNumber() + 1;
-        // 시작 페이지 번호 (현재 페이지 번호 - 4, 최소 1)
-        int startPage = Math.max(nowPage - 4, 1);
-        // 끝 페이지 번호 (현재 페이지 번호 + 5, 최대 전체 페이지 수)
-        int endPage = Math.min(nowPage + 5, list.getTotalPages());
+        boardService.write(board, file);
 
-        // 모델에 게시물 목록, 현재 페이지 번호, 시작 페이지 번호, 끝 페이지 번호를 추가
+        model.addAttribute("message", "글 작성이 완료되었습니다.");
+        model.addAttribute("searchUrl", "/board/list");
+        return "message"; // 성공 메시지 뷰 반환
+    }
+
+    // 게시물 목록을 가져옴
+    @GetMapping("/board/list")
+    public String boardList(Model model,
+                            @PageableDefault(page = 0, size = 6, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
+                            @RequestParam(required = false) String searchKeyword) {
+        Page<Board> list = (searchKeyword == null)
+                ? boardService.boardList(pageable)
+                : boardService.boardSearchList(searchKeyword, pageable);
+
+        int nowPage = list.getPageable().getPageNumber() + 1;
+        int totalPages = list.getTotalPages();
+        int pageSize = 10;
+
+        int startPage = Math.max(nowPage - (pageSize / 2), 1);
+        int endPage = Math.min(startPage + pageSize - 1, totalPages);
+
+        if (endPage - startPage < pageSize - 1) {
+            startPage = Math.max(endPage - (pageSize - 1), 1);
+        }
+
         model.addAttribute("list", list);
         model.addAttribute("nowPage", nowPage);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 
-        // 게시물 목록 페이지를 반환
-        return "boardlist";
+        return "boardlist"; // 게시물 목록 뷰 반환
     }
 
-    // 게시물 상세보기 페이지를 반환하는 메소드
+    // 게시물 상세보기 페이지를 반환
     @GetMapping("/board/view")
-    public String boardView(Model model, Integer id) {
-        // 모델에 게시물 상세 정보를 추가
+    public String boardView(Model model, @RequestParam Integer id) {
         model.addAttribute("board", boardService.boardView(id));
-
-        // 게시물 상세보기 페이지를 반환
-        return "boardview";
+        return "boardview"; // 게시물 상세보기 뷰 반환
     }
 
-    // 게시물 삭제 처리를 하는 메소드
+    // 게시물 삭제 처리
     @GetMapping("/board/delete")
-    public String boardDelete(Integer id) {
-        // 서비스 클래스의 boardDelete 메소드를 호출하여 게시물 삭제 처리
+    public String boardDelete(@RequestParam Integer id) {
         boardService.boardDelete(id);
-
-        // 게시물 목록 페이지로 리다이렉트
-        return "redirect:/board/list";
+        return "redirect:/board/list"; // 게시물 목록 페이지로 리다이렉트
     }
 
-    // 게시물 수정 폼을 반환하는 메소드
+    // 게시물 수정 폼을 반환
     @GetMapping("/board/modify/{id}")
-    public String boardModify(@PathVariable("id") Integer id, Model model) {
-        // 모델에 게시물 상세 정보를 추가
+    public String boardModify(@PathVariable Integer id, Model model) {
         model.addAttribute("board", boardService.boardView(id));
-
-        // 게시물 수정 폼을 반환
-        return "boardmodify";
+        return "boardmodify"; // 게시물 수정 폼 뷰 반환
     }
 
-    // 게시물 수정 처리를 하는 메소드
+    // 게시물 수정 처리
     @PostMapping("/board/update/{id}")
-    public String boardUpdate(@PathVariable("id") Integer id, Board board, MultipartFile file) throws Exception {
-        // 게시글 제목과 내용을 수정하기 위해 서비스 클래스의 updateBoard 메소드 호출
-        boardService.updateBoard(id, board.getTitle(), board.getContent());
-
-        // 파일이 있는 경우 처리 (파일 삭제, 업로드 등 필요한 작업)
-        if (file != null && !file.isEmpty()) {
-            // 파일 처리 로직 (기존 파일 삭제, 새로운 파일 업로드 등)
+    public String boardUpdate(@PathVariable Integer id, Board board, @RequestParam(value = "file", required = false) MultipartFile file, Model model) throws Exception {
+        if (board.getTitle() == null || board.getTitle().trim().isEmpty() ||
+                board.getContent() == null || board.getContent().trim().isEmpty()) {
+            model.addAttribute("message", "제목과 내용이 필요합니다.");
+            model.addAttribute("searchUrl", "/board/modify/" + id);
+            return "message"; // 에러 메시지 뷰 반환
         }
 
-        // 게시물 목록 페이지로 리다이렉트
-        return "redirect:/board/list";
+        boardService.updateBoard(id, board.getTitle(), board.getContent());
+
+        if (file != null && !file.isEmpty()) {
+            // 파일 처리 로직 추가 가능
+        }
+
+        return "redirect:/board/list"; // 게시물 목록 페이지로 리다이렉트
     }
 }
