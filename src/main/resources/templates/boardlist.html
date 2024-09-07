@@ -2,49 +2,107 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시글 리스트 페이지</title>
+    <title>게시물 페이지</title>
+    <style>
+        .layout {
+             width: 500px;
+             margin: 0 auto;
+             margin-top: 40px;
+             padding: 20px;
+             background-color: #f9f9f9;
+             border: 1px solid #ddd;
+             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+         }
+
+         table {
+             width: 100%;
+             border-collapse: collapse;
+         }
+
+         th, td {
+             border: 1px solid #ddd;
+             padding: 10px;
+             text-align: left;
+         }
+
+         th {
+             background-color: #f0f0f0;
+         }
+
+        .pagination {
+             margin-top: 20px;
+             text-align: center;
+         }
+
+        .pagination a {
+             margin-right: 10px;
+             padding: 5px 10px;
+             border: 1px solid #ddd;
+             border-radius: 5px;
+             text-decoration: none;
+             color: #337ab7;
+         }
+
+        .pagination a:hover {
+             background-color: #f0f0f0;
+         }
+
+         button {
+             background-color: #4CAF50;
+             color: #fff;
+             padding: 10px 20px;
+             border: none;
+             border-radius: 5px;
+             cursor: pointer;
+         }
+
+         button:hover {
+             background-color: #3e8e41;
+         }
+
+         input[type="text"] {
+             width: 100%;
+             padding: 10px;
+             margin-bottom: 20px;
+             border: 1px solid #ccc;
+         }
+    </style>
 </head>
 
-<style>
-
-    .layout {
-        width : 500px;
-        margin : 0 auto;
-        margin-top : 40px;
-    }
-
-</style>
-
 <body>
+<div class="layout">
+    <h1>게시물 리스트</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>글번호</th>
+            <th>제목</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="board : ${list}">
+            <td th:text="${board.id}">1</td>
+            <td>
+                <a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-    <div class="layout">
-
-        <table>
-            <thead>
-                <tr>
-                    <th>글번호</th>
-                    <th>제목</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="board : ${list}">
-                    <td th:text="${board.id}">1</td>
-                    <td>
-                        <a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}"></a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
+    <div class="pagination">
         <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
-            <a th:if="${page != nowPage}" th:href="@{/board/list(page = ${page - 1}, searchKeyword = ${param.searchKeyword})}" th:text="${page}"></a>
+            <a th:if="${page!= nowPage}" th:href="@{/board/list(page = ${page - 1}, searchKeyword = ${param.searchKeyword})}" th:text="${page}"></a>
             <strong th:if="${page == nowPage}" th:text="${page}" style="color : red"></strong>
         </th:block>
-        <form th:action="@{/board/list}" method="get">
-            <input type="text" name="searchKeyword">
-            <button type="submit">검색</button>
-        </form>
     </div>
 
+    <form th:action="@{/board/list}" method="get">
+        <input type="text" name="searchKeyword" placeholder="검색어 입력">
+        <button type="submit">검색</button>
+    </form>
+
+    <!-- Make the link to the blog post writing form a button -->
+    <button onclick="location.href='/board/write'">게시물 작성</button>
+</div>
 </body>
 </html>
