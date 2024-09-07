@@ -21,24 +21,39 @@ public class BoardService {
 
     // 글 작성 처리
     public void write(Board board, MultipartFile file) throws Exception{
-        // 프로젝트 경로를 가져옴
         String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
-
-        // UUID 생성
         UUID uuid = UUID.randomUUID();
-
-        // 파일명 생성 (UUID + 원래 파일명)
         String fileName = uuid + "_" + file.getOriginalFilename();
-
-        // 파일 저장 경로 설정
         File saveFile = new File(projectPath, fileName);
-
-        // 파일 저장
         file.transferTo(saveFile);
 
-        // Board 객체에 파일 정보 설정
         board.setFilename(fileName);
         board.setFilepath("/files/" + fileName);
+
+        boardRepository.save(board);
+    }
+
+    // 게시글 수정 처리
+    public void updateBoard(Integer id, Board updatedBoard, MultipartFile file) throws Exception {
+        // 기존 게시글 가져오기
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid board ID"));
+
+        // 파일이 있는 경우에만 파일을 새로 저장
+        if (!file.isEmpty()) {
+            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+            UUID uuid = UUID.randomUUID();
+            String fileName = uuid + "_" + file.getOriginalFilename();
+            File saveFile = new File(projectPath, fileName);
+            file.transferTo(saveFile);
+
+            board.setFilename(fileName);
+            board.setFilepath("/files/" + fileName);
+        }
+
+        // 게시글 내용 수정
+        board.setTitle(updatedBoard.getTitle());
+        board.setContent(updatedBoard.getContent());
 
         // DB에 저장
         boardRepository.save(board);
@@ -46,25 +61,34 @@ public class BoardService {
 
     // 게시글 리스트 처리
     public Page<Board> boardList(Pageable pageable) {
-        // 모든 게시글을 pageable 형식으로 반환
         return boardRepository.findAll(pageable);
     }
 
     public Page<Board> boardSearchList(String searchKeyword, Pageable pageable) {
-        // 제목에 검색 키워드가 포함된 게시글을 pageable 형식으로 반환
         return boardRepository.findByTitleContaining(searchKeyword, pageable);
     }
 
     // 특정 게시글 불러오기
     public Board boardView(Integer id) {
-        // id로 게시글을 조회
         return boardRepository.findById(id).get();
     }
 
     // 특정 게시글 삭제
     public void boardDelete(Integer id) {
-        // id로 게시글을 삭제
         boardRepository.deleteById(id);
     }
-}
 
+    // 게시글 수정 처리
+    public void updateBoard(Integer id, String title, String content) {
+        // id로 게시글을 조회
+        Board board = boardRepository.findById(id).orElse(null);
+
+        if (board != null) {
+            // 게시글 제목과 내용 수정
+            board.setTitle(title);
+            board.setContent(content);
+            // 수정된 게시글을 DB에 저장
+            boardRepository.save(board);
+        }
+    }
+}

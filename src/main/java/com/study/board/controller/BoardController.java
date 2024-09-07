@@ -115,13 +115,13 @@ public class BoardController {
     // 게시물 수정 처리를 하는 메소드
     @PostMapping("/board/update/{id}")
     public String boardUpdate(@PathVariable("id") Integer id, Board board, MultipartFile file) throws Exception {
-        // 서비스 클래스의 boardView 메소드를 호출하여 게시물 상세 정보를 가져옴
-        Board boardTemp = boardService.boardView(id);
-        // 게시물 제목과 내용을 수정
-        boardTemp.setTitle(board.getTitle());
-        boardTemp.setContent(board.getContent());
-        // 서비스 클래스의 write 메소드를 호출하여 게시물 수정 처리
-        boardService.write(boardTemp, file);
+        // 게시글 제목과 내용을 수정하기 위해 서비스 클래스의 updateBoard 메소드 호출
+        boardService.updateBoard(id, board.getTitle(), board.getContent());
+
+        // 파일이 있는 경우 처리 (파일 삭제, 업로드 등 필요한 작업)
+        if (file != null && !file.isEmpty()) {
+            // 파일 처리 로직 (기존 파일 삭제, 새로운 파일 업로드 등)
+        }
 
         // 게시물 목록 페이지로 리다이렉트
         return "redirect:/board/list";
