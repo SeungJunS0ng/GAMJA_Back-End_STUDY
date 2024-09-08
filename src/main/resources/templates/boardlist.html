@@ -141,6 +141,13 @@
         .search-button:hover {
             background-color: #0056b3;
         }
+
+        .message {
+            color: #ff0000;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -148,6 +155,9 @@
 <div class="layout">
     <!-- 게시물 리스트 제목 -->
     <h1>게시물 리스트</h1>
+
+    <!-- 검색 결과 메시지 추가 -->
+    <div th:if="${message}" class="message" th:text="${message}"></div>
 
     <!-- 게시물 목록 테이블 -->
     <table>
