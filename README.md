@@ -73,8 +73,6 @@ BoardService는 createBoard 메소드를 호출하여 비즈니스 로직을 수
 
 BoardRepository는 데이터베이스에 새로운 게시글을 저장하도록 설정되어 있습니다. 따라서, save 메소드를 호출하여 데이터베이스에 새로운 게시글을 저장합니다.
 
-데이터베이스에 새로운 게시글이 저장됩니다.
-
 새로운 게시글이 데이터베이스에 저장되면, 결과가 반환됩니다. BoardService는 결과를 BoardController에 반환합니다.
 
 BoardController는 결과를 사용자에게 반환합니다.
