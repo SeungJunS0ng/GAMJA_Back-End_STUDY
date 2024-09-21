@@ -1,3 +1,4 @@
+
 package com.study.board.entity;
 
 import lombok.Data;

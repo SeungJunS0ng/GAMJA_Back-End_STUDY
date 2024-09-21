@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시물 작성폼</title>
+    <title>게시물 수정폼</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -66,12 +66,23 @@
 <div class="layout">
     <h1>게시물 수정</h1>
     <!-- 게시물 수정 폼 -->
-    <form th:action="@{/board/update/{id}(id=${board.id})}" method="post">
+    <form th:action="@{/board/update/{id}(id=${board.id})}" method="post" enctype="multipart/form-data">
         <!-- 제목 입력 필드 -->
-        <input name="title" type="text" th:value="${board.title}" placeholder="제목을 입력하세요">
+        <input name="title" type="text" th:value="${board.title}"
+               placeholder="제목을 입력하세요" required>
 
         <!-- 내용 입력 필드 -->
-        <textarea name="content" placeholder="내용을 입력하세요" th:text="${board.content}"></textarea>
+        <textarea name="content" placeholder="내용을 입력하세요"
+                  th:text="${board.content}" required></textarea>
+
+        <!-- 현재 파일 정보 표시 -->
+        <div>
+            <strong>현재 파일:</strong>
+            <span th:text="${currentFile}">현재 파일</span>
+        </div>
+
+        <!-- 파일 입력 필드 -->
+        <input type="file" name="file" accept="image/*"> <!-- 이미지 파일만 허용 -->
 
         <!-- 제출 버튼 -->
         <button type="submit">수정</button>
