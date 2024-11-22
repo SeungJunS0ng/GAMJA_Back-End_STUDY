@@ -19,13 +19,20 @@ repositories {
 }
 
 dependencies {
+//	implementation 'io.jsonwebtoken:jjwt:0.9.1' // 최신 버전 확인 후 사용
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	//이 부분 새로 추가 작성했습니다!
+	implementation 'software.amazon.awssdk:s3:2.20.14'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'com.h2database:h2'
 }
 
 test {
