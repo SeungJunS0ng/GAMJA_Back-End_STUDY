@@ -15,7 +15,7 @@ public class S3Config {
         return S3Client.builder()
                 .region(Region.AP_NORTHEAST_2) // 원하는 리전으로 설정
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create("AKIAXBZV5BQABA5VY4QS", "ApQcRqLFuiGH6Z+X1ZYQs6OgOa82PQOiqcF7jmsK")))
+                        AwsBasicCredentials.create("", "")))
                 .build();
     }
 }
